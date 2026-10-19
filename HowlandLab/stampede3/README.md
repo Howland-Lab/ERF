@@ -107,7 +107,7 @@ The CPU, PVC and ensemble results reported in Oct 2026 were produced with **upst
 record the commit in each run's log (`git -C $ERF_HOME rev-parse HEAD`).
 
 Validation: with the same grid and closure, ERF reproduces the WRF-LES mean profiles, fluxes and w distributions
-(stable 3.125 m: u* within 0.5 %, h within 2 %; convective 25 m: mixed-layer depth 1040 vs 1072 m, same θ and
+(stable 3.125 m: u* within 0.5 %, h within 2 %; convective 25 m: mixed-layer depth 1040 vs 1052 m (WRF re-run), same θ and
 heat-flux profile; w skewness at mid-layer 0.70 vs 0.77 in the WRF re-run). The convective WRF run first showed a wind/TKE
 bump at 600–900 m; that was a WRF artefact (ideal LES seeds every MPI rank identically, and with 14 x 16 ranks the
 patch tiles the domain exactly), gone after re-running with 14 x 15 ranks. The CPU and PVC builds give the same answer

@@ -26,7 +26,7 @@ Wall time = ERF "Total Time". PVC runs override the boxes on the command line: `
 ## Main results (details in `results/`)
 
 - **ERF vs WRF-LES** (`summary.json`). Stable 3.125 m: u* 0.278 vs 0.277 m/s, h 191 vs 195 m. Convective 25 m:
-  mixed-layer depth 1040 vs 1072 m and the same θ and heat-flux profiles. WRF's extra wind/TKE bump at 600–900 m came
+  mixed-layer depth 1040 vs 1052 m (WRF re-run) and the same θ and heat-flux profiles. WRF's extra wind/TKE bump at 600–900 m came
   from WRF's identical per-rank initial noise (exact tiling with 14 × 16 ranks), and it disappears with 14 × 15 ranks.
 - **CPU vs PVC**: the same answer. PVC on 1 node takes 1.9 h; CPU on 4 nodes takes 2.5 h.
 - **Ensembles** (`week2_summary.json`):
