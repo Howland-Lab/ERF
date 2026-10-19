@@ -1,0 +1,6 @@
+# build trees and run directories live inside this folder but are never committed
+_build/
+runs/
+*.o[0-9]*
+*.e[0-9]*
+__pycache__/
