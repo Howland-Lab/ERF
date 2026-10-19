@@ -3,6 +3,7 @@
 Newest first. Record every change to the build/run environment here, with the symptom that prompted it.
 
 ## 2026-10-19
+- `record/`: run table (`RUNS.md`), exact inputs of all 20 runs, and analysis summary JSON. Outputs stay on Stampede3.
 - Created branch `hsna` from Howland-Lab/ERF `development` (`3a542f5d4`) and moved all Stampede3 material into
   `HowlandLab/stampede3/` (env, build, run, cases, analysis). No ERF source changes.
 - H100: `I_MPI_FABRICS=shm` in `env/h100.sh`. The job of 17 Oct aborted in `MPI_Init` with

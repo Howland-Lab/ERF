@@ -12,6 +12,7 @@ HowlandLab/stampede3/
   build/     build_cpu.sh  build_cpu.slurm  build_h100.sh  build_pvc.slurm
   run/       submit_cpu.slurm  submit_h100.slurm  submit_pvc.slurm  submit_pvc_multi.slurm  smoke_test_login.sh
   cases/     sbl_dx6p25  sbl_dx3p125  cbl_sd25  (decks that mirror our WRF-LES runs)  make_variants.py
+  record/    RUNS.md: every run so far (what, where, how long, status) + its exact inputs + summary numbers
   analysis/  scripts used for the ERF-vs-WRF comparison, ensembles and grey-zone scan (paths at the top are site-specific)
 ```
 
