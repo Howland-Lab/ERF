@@ -1,7 +1,7 @@
 # Run record (ERF, Oct 2026)
 
 Every ERF run done so far, with the exact `inputs` / `input_sounding` used (`inputs/<folder>__<run>/`) and the summary
-numbers from the analysis (`results/*.json`). **Outputs (plotfiles, profiles, logs; ~200 GB) are not in git.** They are
+numbers from the analysis (`results/*.json`). **Outputs (plotfiles, profiles, logs; ~155 GB) are not in git.** They are
 on Stampede3 under `/work2/11859/hsna/stampede3/HowlandLab/ERF_runs/<folder>/<run>/`.
 
 All successful runs used ERF `26.09-538-ge50b1611bc98` (upstream erf-model/ERF, as printed in each `log.erf`).
