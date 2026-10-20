@@ -2,6 +2,13 @@
 
 Newest first. Record every change to the build/run environment here, with the symptom that prompted it.
 
+## 2026-10-20
+- 1 km MYNN2.5 runs in ERF (`pbl_type = MYNN25`, `les_type = Smagorinsky2D`, `Cs = 0.25`), mirroring WRF's 1 km runs.
+  MYNN25 trips the floating-point trap at step 1 (`ComputeDiffusivityMYNN25`), so these decks set `amrex.fpe_trap_invalid = 0`
+  as ERF's own `inputs_GABLS1_mynn25` does; profiles checked for NaN (none).
+- `analysis/erf_rans_compare.py` (ERF vs WRF 1 km vs LES), `analysis/planes_clean_fig.py` (PDFs without the invalid WRF runs,
+  merged tail bins, sample count in the legend).
+
 ## 2026-10-19
 - `record/`: run table (`RUNS.md`), exact inputs of all 20 runs, and analysis summary JSON. Outputs stay on Stampede3.
 - Created branch `hsna` from Howland-Lab/ERF `development` (`3a542f5d4`) and moved all Stampede3 material into

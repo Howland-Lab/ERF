@@ -1,0 +1,72 @@
+# ERF stable ABL (GABLS1) at 1 km with the MYNN 2.5 PBL scheme: mirror of the WRF run abl_cases/sbl_rans
+# (the "NWP version" item of Mike's starting guide). 100 km x 100 km x 400 m, 100 x 100 x 64 cells, 9 h.
+# WRF: bl_pbl_physics=5 (MYNN2.5), sf_sfclay_physics=1, diff_opt=1, km_opt=4 (2-D Smagorinsky horizontally, c_s=0.25 default),
+#      dt=5 s, time_step_sound=6, damp_opt=2 zdamp=100 dampcoef=0.003, spec_sf_heatrate=-0.25 K/h, z0=0.1, lat 73.
+erf.prob_name = "ABL"
+stop_time = 32400.0
+amrex.fpe_trap_invalid = 0            # as in ERF's inputs_GABLS1_mynn25 (MYNN trips the trap at step 1; output checked for NaN)
+
+geometry.prob_extent = 100000 100000 400
+amr.n_cell           = 100 100 64
+geometry.is_periodic = 1 1 0
+amr.max_level        = 0
+amr.max_grid_size_x  = 20
+amr.max_grid_size_y  = 20
+
+zlo.type                   = "surface_layer"
+erf.most.z0                = 0.1
+erf.most.surf_temp         = 265.0
+erf.most.surf_heating_rate = -0.25
+zhi.type        = "SlipWall"
+zhi.theta_grad  = 0.01
+
+erf.init_type           = "input_sounding"
+erf.input_sounding_file = "input_sounding"
+erf.sounding_type       = Ideal
+prob.T_0_Pert_Mag       = 0.05
+prob.pert_ref_height    = 25.0
+prob.pert_rhotheta      = false
+prob.KE_0            = 0.4             # initial TKE (as in ERF's inputs_GABLS1_mynn25)
+prob.KE_decay_height = 250.
+prob.KE_decay_order  = 3
+
+erf.fixed_dt           = 5.0
+erf.fixed_mri_dt_ratio = 6
+erf.substepping_type   = Implicit
+erf.dycore_horiz_adv_type  = "Upwind_5th"
+erf.dycore_vert_adv_type   = "Upwind_3rd"
+erf.dryscal_horiz_adv_type = "Upwind_5th"
+erf.dryscal_vert_adv_type  = "Upwind_3rd"
+
+erf.use_gravity  = true
+erf.use_coriolis = true
+erf.coriolis_3d  = false
+erf.latitude     = 73.0
+erf.rotational_time_period = 86455.2516813368
+erf.abl_driver_type = "GeostrophicWind"
+erf.abl_geo_wind    = 8.0 0.0 0.0
+
+# turbulence: PBL scheme vertically, 2-D Smagorinsky horizontally (= WRF km_opt=4 + bl_pbl_physics=5)
+erf.molec_diff_type = "None"
+erf.pbl_type = MYNN25
+erf.les_type = "Smagorinsky2D"
+erf.Cs       = 0.25
+
+erf.rayleigh_damp_U = true
+erf.rayleigh_damp_V = true
+erf.rayleigh_damp_W = true
+erf.rayleigh_damp_T = true
+erf.rayleigh_dampcoef = 0.003
+erf.rayleigh_zdamp    = 100.
+
+erf.v = 1
+amr.v = 1
+erf.sum_interval = 120
+erf.data_log     = surf_hist.dat mean_profiles.dat covar_profiles.dat sfs_profiles.dat
+erf.profile_int  = 12                  # every 60 s
+erf.destag_profiles = false
+erf.plot_file_1  = plt
+erf.plot_per_1   = 1800.0
+erf.plot_vars_1  = x_velocity y_velocity z_velocity theta rhoKE Kmv Khv
+erf.check_file   = chk
+erf.check_per    = 10800.0

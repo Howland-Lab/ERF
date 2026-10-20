@@ -22,6 +22,8 @@ Wall time = ERF "Total Time". PVC runs override the boxes on the command line: `
 | cases/gz_cbl_dx100 | grey-zone scan, Δ = 100 m | 160²×100 | CPU SPR, 64 | 4 h | 2.3 h | 10-16 | ok |
 | cases/gz_cbl_dx200 | grey-zone scan, Δ = 200 m | 80²×100 | CPU SPR, 16 | 4 h | 1.9 h | 10-16 | ok |
 | cases/gz_cbl_dx400 | grey-zone scan, Δ = 400 m | 40²×100 | CPU SPR, 16 | 4 h | 0.6 h | 10-16 | ok |
+| cases/rans_sbl_1km | GABLS1 at 1 km, MYNN2.5 + Smagorinsky2D (mirror of WRF sbl_rans) | 100²×64, 1 km | CPU SPR, 25 | 9 h | 0.14 h | 10-20 | ok (`amrex.fpe_trap_invalid = 0` needed) |
+| cases/rans_cbl_1km | Shin & Dudhia at 1 km, MYNN2.5 + Smagorinsky2D (mirror of WRF cbl_rans) | 100²×120, 1 km | CPU SPR, 25 | 4 h | 0.18 h | 10-20 | ok |
 
 ## Main results (details in `results/`)
 
@@ -34,6 +36,9 @@ Wall time = ERF "Total Time". PVC runs override the boxes on the command line: `
   - Tail probabilities vary more: P(w′ > 3σ) ±31 % (convective, 6 members) and ±13 % (stable, 5 members).
   - In the stable case θ still drifts by 0.2 K/h at 8–9 h, against a 0.02 K spread between members, so it is not
     stationary. The wind is steady.
+- **1 km MYNN in ERF** (`rans1km_summary.json`). Stable: close to LES (h 197 vs 191–195 m, u* −6 %). Convective: zi 1050 m = LES;
+  WRF's default `bl_pbl_physics=5` has the EDMF mass flux ON (`bl_mynn_edmf=1`) and gives zi 1150 m; with it off WRF also gives 1051 m.
+  u* is 8–20 % too high in every 1 km run (momentum over-mixing).
 - **Grey zone** (`week2_summary.json`, `gz_fairtest.json`). Compared with the 25 m LES box-averaged to the same Δ:
   - Coarse grids keep the means.
   - Coarse grids overestimate σw by 11–18 %.
