@@ -2,6 +2,22 @@
 
 Newest first. Record every change to the build/run environment here, with the symptom that prompted it.
 
+## 2026-10-22
+- H100 works: `cases_gpu/cbl_sd25` ran 2400 steps (600 s) in 228 s on 4 GPUs with `I_MPI_FABRICS=shm` (job 3616319, 21 Oct);
+  the 4 h case would take ~1.5 h, about the PVC node's 1.9 h.
+- Grey-zone PBL-scheme scan (`cases/make_gz_pbl_runs.py`, `run/submit_cpu_chain.slurm`): MRF and MRF+blending ran at 100/200/400 m;
+  MYNN2.5 and MYNN-EDMF stop at step 1–2 with `RhoTheta is negative ... -nan` in the lowest cell, although the same deck runs with
+  MRF and MYNN2.5 runs at 1 km.  Debug deck `gzpbl_mynn25_dx400_fpe` (trap on, 10 steps) submitted to locate the first invalid op.
+- `cases/make_ar_runs.py`: aspect-ratio test (dz 50 and 100 m at dx 100 m) for the VLES scan, after the remark that the LES SGS model
+  is isotropic so dx/dz matters.  `cases/cbl_woa_dx100`: first terrain-fitted run (`prob.custom_terrain_type = WoA`).
+- `analysis/tke_budget.py`: resolved TKE budget from the profile logs, with a self-test (`--selftest`) and run-time checks
+  (Mike, 22 Oct: analysis code written with AI help must be verified).  Found that `covar_profiles` column 21 ⟨w'θ_v'⟩ is wrong for
+  dry runs (use column 10), and that in the 25 m convective case the Deardorff dissipation accounts for well under half of the
+  resolved-TKE loss; see `record/RUNS.md`.
+- For the record (WRF side, not in this repo): WRF's `module_initialize_ideal.F` now takes an optional `WRF_SEED` environment
+  variable that seeds the initial noise per rank and member, so WRF ensembles comparable to `ens_cbl25_s*` / `ens_sbl6_s*` were
+  submitted on 22 Oct.
+
 ## 2026-10-20
 - 1 km MYNN2.5 runs in ERF (`pbl_type = MYNN25`, `les_type = Smagorinsky2D`, `Cs = 0.25`), mirroring WRF's 1 km runs.
   MYNN25 trips the floating-point trap at step 1 (`ComputeDiffusivityMYNN25`), so these decks set `amrex.fpe_trap_invalid = 0`
