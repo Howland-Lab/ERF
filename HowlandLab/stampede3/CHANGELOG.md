@@ -14,9 +14,35 @@ Newest first. Record every change to the build/run environment here, with the sy
   (Mike, 22 Oct: analysis code written with AI help must be verified).  Found that `covar_profiles` column 21 ⟨w'θ_v'⟩ is wrong for
   dry runs (use column 10), and that in the 25 m convective case the Deardorff dissipation accounts for well under half of the
   resolved-TKE loss; see `record/RUNS.md`.
+- `analysis/verify_analysis.py` + `analysis/spectra.py`: known-answer tests (66 checks, one command) for the analysis code behind
+  the 22 Oct deck and the results blog: spectra (sine -> one peak, Parseval, white noise flat, 16 copies -> comb, shifted copies
+  -> no comb), Moments (Gaussian/exponential skewness, kurtosis, 3-sigma tails, streaming), merged/masked PDF bins, exceedance
+  curves, the box filter of the fair test, autocorrelation/integral scale/block statistics, the three boundary-layer depths, and
+  the budget (analytic terms, surface closure, duplicated-time blocks, the w'theta_v trap).  `--real` re-derives the tiling
+  diagnosis on the WRF planes: the 14 x 16-rank run is still exactly periodic every 20 cells in y at 4 h.  No bug was found in
+  the published numbers; `spectra.py` fixes the spectrum normalisation (1-D: sum E dk = var; 2-D: |FFT2|^2/N^2, sum = var).
+  To make the functions importable, `planes_clean_fig.py` and `gz_filter_compare.py` (here) and `nwp_vs_les_tails.py`,
+  `postproc_highres.py` (WRF tree) got `main()` guards and `merged_pdf()` / `box_average()`; their outputs were regenerated and
+  are bit-identical to before.
 - For the record (WRF side, not in this repo): WRF's `module_initialize_ideal.F` now takes an optional `WRF_SEED` environment
   variable that seeds the initial noise per rank and member, so WRF ensembles comparable to `ens_cbl25_s*` / `ens_sbl6_s*` were
   submitted on 22 Oct.
+
+- `analysis/veer_profiles.py`: wind speed/direction (veer) profiles, WRF vs ERF ensemble means (Mike, 22 Oct). WRF ≈ ERF:
+  convective surface-layer direction 255.0 ± 0.5 vs 255.6°, stable 236.3 ± 0.4 vs 237.5° with +10° of turning by 100 m and the
+  LLJ at 166 (ERF) vs 184 m (WRF); both tend to 270° (geostrophic) at the top.
+- `analysis/gz_scheme_analysis.py` fixed (planes stream has no XTIME → Times strings; WRF stress on cell levels) and run on the
+  finished scan members (`record/results/gz_schemes.json`); WRF `mynn_edmf` ≡ `mynn_nomf` at 100–200 m because the hard-wired
+  scale-aware Psig switches the mass flux off at Δ ≪ z_i (namelists differ, BL_MYNN_EDMF 1 vs 0 confirmed in namelist.output).
+- `analysis/ar_test_analysis.py` and `analysis/terrain_first_look.py` prepared for the pending aspect-ratio and terrain runs
+  (smoke-tested on gz_cbl_dx100).
+- `record/draft_email_NCAR_3DPBL_20261022.md`: draft of the question to NCAR about a 3-D PBL port into ERF (not sent).
+- TODO (22 Oct 2026, from the TKE-budget work): add an SGS-production column <tau_ij s_ij> to sfs_profiles.dat so the resolved-TKE
+  budget can separate the transfer to the subgrid scales from numerical dissipation (needed for Smagorinsky, where no epsilon
+  exists; a check of the equilibrium assumption for Deardorff).  Where: Source/IO/ERF_Write1DProfiles.cpp (derive_diag_profiles,
+  next to h_avg_sgsdiss) using the stored Tau11..Tau33 MultiFabs and the strain from the velocity gradients already formed in
+  Source/Diffusion/ERF_ComputeStrain.cpp.  Needs a rebuild (build job on skx/spr) and a check that the column integrates to the
+  same mixed-layer value as -epsilon_sgs in the Deardorff convective case (tke_budget.py gives -0.16 w*^3/zi).
 
 ## 2026-10-20
 - 1 km MYNN2.5 runs in ERF (`pbl_type = MYNN25`, `les_type = Smagorinsky2D`, `Cs = 0.25`), mirroring WRF's 1 km runs.

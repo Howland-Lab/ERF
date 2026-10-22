@@ -69,7 +69,9 @@ def wrf_run(scheme, dx):
     # resolved w at the reference level from the 2-min planes
     pf = glob.glob(f"{path}/planes_d01_*"); W = []
     if pf:
-        p = nc.Dataset(pf[0]); p.set_auto_mask(False); tp = np.asarray(p["XTIME"][:]) * 60.0
+        p = nc.Dataset(pf[0]); p.set_auto_mask(False)
+        # the planes stream has no XTIME (my_iofields strips it): seconds from the Times strings "0001-01-01_03:02:00"
+        tp = np.array([sum(float(x) * s for x, s in zip("".join(r.astype(str)).split("_")[1].split(":"), (3600, 60, 1))) for r in p["Times"][:]])
         kk = int(np.argmin(abs(m["zh"] - ZREF)))
         for it in range(len(tp)):
             if WIN[0] - 1 <= tp[it] <= WIN[1] + 1:
@@ -118,7 +120,8 @@ def main():
             ls = "-" if r["code"] == "ERF" else "--"; c = COLS[r["scheme"]]
             ax[i, 0].plot(np.hypot(r["u"], r["v"]), r["zc"], ls, color=c, lw=1.4, label=r["label"])
             ax[i, 1].plot(r["th"], r["zc"], ls, color=c, lw=1.4)
-            ax[i, 2].plot(r["tau"] / r["ust"] ** 2, r["zf"], ls, color=c, lw=1.4)
+            zt = r["zf"] if len(r["zf"]) == len(r["tau"]) else r["zc"]      # WRF profiles return the stress on cell levels
+            ax[i, 2].plot(r["tau"] / r["ust"] ** 2, zt, ls, color=c, lw=1.4)
             ax[i, 3].plot(r["tke_res"] + r["tke_model"], r["zc"], ls, color=c, lw=1.4)
             ax[i, 3].plot(r["tke_model"], r["zc"], ":", color=c, lw=0.9)
         for a, xl in zip(ax[i], ["wind speed (m/s)", r"$\theta$ (K)", r"resolved $|\tau|/u_*^2$", "TKE: total (solid), modelled (dotted)"]):

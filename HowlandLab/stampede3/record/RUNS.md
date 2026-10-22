@@ -60,3 +60,7 @@ Wall time = ERF "Total Time". PVC runs override the boxes on the command line: `
   1.8e-3 m²/s³, of which the mean-shear SGS transfer takes 9 %; the rest is in the residual (fluctuating-strain SGS transfer and
   numerics cannot be separated without a ⟨τ_ij s_ij⟩ output).  Note: `covar_profiles` column 21 ⟨w'θ_v'⟩ is unusable for dry runs
   in this ERF version (negative at every height); the budget uses column 10 ⟨w'θ'⟩.
+- **Wind direction (veer)** (`veer_profiles.json`): WRF and ERF agree in direction as in speed; see CHANGELOG 2026-10-22.
+- **Grey-zone scheme scan, preliminary** (`gz_schemes.json`, WRF dx 400 pending): at 0.5 z_i the WRF PBL-scheme runs still resolve
+  the convection (σ_w 1.17–1.27 m/s at Δ = 100 m against the fair-test 1.148), ERF MRF under-resolves it (0.97) and the Boutle
+  blending removes more (0.86); z_i from the gradient 1090–1196 m vs 1040 m in the LES; u* 0.49–0.59 vs 0.52.
