@@ -16,14 +16,20 @@ WRF = {"cbl": ["cbl_sd25_fix", "ens_cbl25_s1", "ens_cbl25_s2", "ens_cbl25_s3", "
        "sbl": ["sbl_dx6p25", "ens_sbl6_s1", "ens_sbl6_s2", "ens_sbl6_s3", "ens_sbl6_s4", "ens_sbl6_s5"]}
 HKEY = {"cbl": "h_minflux", "sbl": "h_stress"}
 STATS = ["ust", "h", "w_std", "w_skew", "w_kurt", "w_p3"]
-LBL = {"ust": "$u_*$ (m/s)", "h": "depth (m)", "w_std": "$\\sigma_w$ at 0.5 $z_i$ (m/s)", "w_skew": "skewness", "w_kurt": "kurtosis", "w_p3": "$P(|w'|>3\\sigma)$"}
+LBL = {"ust": "$u_*$ (m/s)", "h": "depth (m)", "w_std": "$\\sigma_w$ at 0.5 $z_i$ (m/s)", "w_skew": "skewness", "w_kurt": "kurtosis", "w_p3": "$P(|w'|>3\\sigma)$, window σ (both)"}
 
 
 def wrf_member(name, case):
     f = f"{DATA}/{name}.npz"
     if not os.path.exists(f): return None
     d = np.load(f, allow_pickle=True); M = d["mean"].item(); P = d["planes"].item(); w = P["0.50_w"]
-    tail = np.asarray(w["tail"]); p3 = float(tail[2] + tail[3])      # postproc_highres Moments: [>2σ, <−2σ, >3σ, <−3σ]; ERF w_p3 = P(|w'|>3σ)
+    # P(|w'| > 3σ) with σ = the window standard deviation, from the stored histogram (bins in m/s).  The stored "tail" counts
+    # use the FIRST frame's σ as the threshold (postproc_highres and erf_planes alike); in the stable case that σ differs
+    # by ±10 % between frames and the 3σ count then scatters 4x between members (0.004–0.022) although the window-σ
+    # tails agree (0.005–0.007).  Found 23 Oct 2026.  The ERF ensemble values (week2_analysis.w_stats) already use the
+    # window σ (p3 from allw.std()), so with this recomputation the two sides are like-for-like.
+    b = np.linspace(-8, 8, 321); c = 0.5 * (b[:-1] + b[1:]); h = np.asarray(w["hist"], float)
+    p3 = float(h[np.abs(c) > 3 * w["std"]].sum() / h.sum())
     return dict(name=name, ust=float(M["ust"]), h=float(M[HKEY[case]]), w_std=float(w["std"]), w_skew=float(w["skew"]), w_kurt=float(w["kurt"]), w_p3=float(p3))
 
 

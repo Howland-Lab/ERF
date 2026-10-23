@@ -65,3 +65,8 @@ Wall time = ERF "Total Time". PVC runs override the boxes on the command line: `
 - **Grey-zone scheme scan, preliminary** (`gz_schemes.json`, WRF dx 400 pending): at 0.5 z_i the WRF PBL-scheme runs still resolve
   the convection (σ_w 1.17–1.27 m/s at Δ = 100 m against the fair-test 1.148), ERF MRF under-resolves it (0.97) and the Boutle
   blending removes more (0.86); z_i from the gradient 1090–1196 m vs 1040 m in the LES; u* 0.49–0.59 vs 0.52.
+- **WRF vs ERF ensembles** (`ens_wrf_vs_erf.json`, 23 Oct): with the WRF_SEED patch the WRF member spread equals ERF's in the stable
+  case (u* 0.2725 ± 0.003 vs 0.2687 ± 0.003, h 188 ± 4 vs 179 ± 5 m, σ_w 0.204 both, P(|w'|>3σ) 0.0061 ± 0.0009 vs 0.0065 ± 0.0009)
+  and is smaller in the convective case with 3 members (σ_w 1.219 ± 0.007 vs 1.241 ± 0.046); convective u* differs by 7 %
+  (WRF 0.485 vs ERF 0.519).  Note: the stored 3σ tail counts of both post-processors use the first frame's σ as threshold,
+  which scatters the stable-case WRF tails 4×; the comparison recomputes them with the window σ (as week2_analysis already did).

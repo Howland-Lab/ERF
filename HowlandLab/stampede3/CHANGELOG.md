@@ -15,6 +15,8 @@ Newest first. Record every change to the build/run environment here, with the sy
 - Scheme scan at Δ = 400 m added (`record/results/gz_schemes.json`): the MYNN mass flux now matters (σ_w 0.975 with EDMF vs 1.026
   without, z_i 1156 vs 1116 m); Shin-Hong's resolved σ_w 0.873 sits on the fair-test value 0.868; SMS-3DTKE resolves least (0.779)
   but its total 1.105 is the largest; MRF 0.880 / MRF+blend 0.948 / Deardorff VLES 1.021 (ERF) and 1.029 (WRF).
+- `analysis/ens_wrf_vs_erf.py` run (3 + 6 WRF members): see `record/RUNS.md`.  Found that `Moments.tail` (erf_planes, postproc_highres)
+  counts 3σ exceedances against the first frame's σ; the ensemble comparison uses the window σ instead (TODO: change both classes).
 - WRF side (not in this repo): YSU `ysu_topdown_pblmix = 1` without radiation segfaults at dx = 100 m → 0 for all YSU runs, rerun;
   WRF ensembles (WRF_SEED) verified to have independent initial noise; `analysis/ens_wrf_vs_erf.py` compares their spread with ERF's.
 
