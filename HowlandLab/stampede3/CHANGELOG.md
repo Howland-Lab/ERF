@@ -2,6 +2,22 @@
 
 Newest first. Record every change to the build/run environment here, with the symptom that prompted it.
 
+## 2026-10-23
+- Aspect-ratio test done (`analysis/ar_test_analysis.py`, `record/results/ar_test.json`): dx = 100 m with dz = 20 / 50 / 100 m gives a
+  mixed-layer resolved σ_w of 1.145 / 1.127 / 1.085 m/s (−5 % from dx/dz = 5 to cubic cells), SGS share 5.6 → 9.6 %, z_i 1040 → 1000 m.
+  The dz = 20 m scan runs have an effective filter width (ΔxΔyΔz)^1/3 = 58 m at Δ = 100 m, so part of the scan's σ_w excess is the grid shape.
+- `cases/cbl_woa_dx100` (terrain test) aborted at t = 3638 s: `Maximum number of MOST iterations reached` (ERF_MOSTStress.H:603) — the
+  u* iteration does not converge where the near-surface wind collapses behind the ridge.  Reruns `cbl_woa_dx100_v2` and
+  `cbl_woa_h100_dx100` (hmax 100 m) use `erf.most.average_policy = 1`, `radius = 5`, `time_average = true`, `time_window = 240`.
+- MYNN2.5 trap: `ComputeDiffusivityMYNN25` at step 1 (backtrace resolved with addr2line; the build has no line numbers).  Initial TKE is
+  non-zero only below 1 km (same in the 1 km run that survives).  Four 10-step variants submitted to isolate it (`cases/fpe_v1..v4`:
+  TKE everywhere / dz 29 m / no Smagorinsky2D / the 1 km vertical grid).
+- Scheme scan at Δ = 400 m added (`record/results/gz_schemes.json`): the MYNN mass flux now matters (σ_w 0.975 with EDMF vs 1.026
+  without, z_i 1156 vs 1116 m); Shin-Hong's resolved σ_w 0.873 sits on the fair-test value 0.868; SMS-3DTKE resolves least (0.779)
+  but its total 1.105 is the largest; MRF 0.880 / MRF+blend 0.948 / Deardorff VLES 1.021 (ERF) and 1.029 (WRF).
+- WRF side (not in this repo): YSU `ysu_topdown_pblmix = 1` without radiation segfaults at dx = 100 m → 0 for all YSU runs, rerun;
+  WRF ensembles (WRF_SEED) verified to have independent initial noise; `analysis/ens_wrf_vs_erf.py` compares their spread with ERF's.
+
 ## 2026-10-22
 - H100 works: `cases_gpu/cbl_sd25` ran 2400 steps (600 s) in 228 s on 4 GPUs with `I_MPI_FABRICS=shm` (job 3616319, 21 Oct);
   the 4 h case would take ~1.5 h, about the PVC node's 1.9 h.

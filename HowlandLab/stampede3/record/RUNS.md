@@ -30,9 +30,10 @@ Wall time = ERF "Total Time". PVC runs override the boxes on the command line: `
 | cases/gzpbl_mrfblend_dx{100,200,400} | same, MRF + Boutle 2014 blending `pbl_blend_length = 750` | as above | as above | 4 h | 0.54 / 0.09 / 0.04 h | 10-21 | ok |
 | cases/gzpbl_mynn25_dx{100,200,400} | same, MYNN2.5 (`fpe_trap_invalid = 0`) | as above | as above | — | — | 10-21 | failed at step 1–2: `RhoTheta is negative at (i,0,0) -nan` (MRF fine on the same deck; 1 km MYNN fine) |
 | cases/gzpbl_mynnedmf_dx{100,200,400} | same, MYNN-EDMF | as above | as above | — | — | 10-21 | failed, same message |
-| cases/gzpbl_mynn25_dx400_fpe | debug copy, 10 steps with `fpe_trap_invalid = 1` to get the backtrace of the first invalid op | 40²×100 | CPU SPR, 16 | 40 s | — | submitted 10-22 | pending |
-| cases/gz_cbl_dx100_dz{050,100} | grid aspect-ratio test of the VLES scan: dz 50 and 100 m at dx 100 m (ratio 2 and 1, vs 5 in gz_cbl_dx100) | 160²×40, 160²×20 | CPU SPR, 64 | 4 h | — | submitted 10-22 | pending |
-| cases/cbl_woa_dx100 | first terrain test: gz_cbl_dx100 over a Witch-of-Agnesi ridge in x (hmax 200 m, L 1 km), `StaticFittedMesh` | 160²×100 | CPU SPR, 64 | 4 h | — | submitted 10-22 | pending |
+| cases/gzpbl_mynn25_dx400_fpe | debug copy, 10 steps with `fpe_trap_invalid = 1` to get the backtrace of the first invalid op | 40²×100 | CPU SPR, 16 | 40 s | 3 min | 10-22 | trap in ComputeDiffusivityMYNN25 at step 1; variants fpe_v1–v4 submitted 10-23 |
+| cases/gz_cbl_dx100_dz{050,100} | grid aspect-ratio test of the VLES scan: dz 50 and 100 m at dx 100 m (ratio 2 and 1, vs 5 in gz_cbl_dx100) | 160²×40, 160²×20 | CPU SPR, 64 | 4 h | 1.2 h (both) | 10-23 | ok |
+| cases/cbl_woa_dx100 | first terrain test: gz_cbl_dx100 over a Witch-of-Agnesi ridge in x (hmax 200 m, L 1 km), `StaticFittedMesh` | 160²×100 | CPU SPR, 64 | 1.0 h of 4 | 0.85 h | 10-22 | failed at 3638 s: MOST iteration did not converge (see CHANGELOG 10-23) |
+| cases/cbl_woa_dx100_v2, cbl_woa_h100_dx100 | same with a local-region, time-filtered MOST; hmax 200 and 100 m | 160²×100 | CPU SPR/SKX, 64 | 4 h | — | submitted 10-23 | pending |
 
 ## Main results (details in `results/`)
 
