@@ -62,7 +62,7 @@ struct MYNNLevel25 {
 
     // Clipping (defaults from WRF v4.5.0 onward)
     amrex::Real SMmin = zero;
-    amrex::Real SMmax = bogus_large_value;
+    amrex::Real SMmax = amrex::Real(4);        // WRF 4.6 mym_turbulence: sm25max = 4 (was unbounded here; hsna 27 Oct 2026)
     amrex::Real SHmin = zero;
     amrex::Real SHmax = amrex::Real(4);
     amrex::Real SQmin = zero;

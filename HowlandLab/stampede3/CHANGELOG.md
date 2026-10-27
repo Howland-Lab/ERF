@@ -2,6 +2,23 @@
 
 Newest first. Record every change to the build/run environment here, with the symptom that prompted it.
 
+## 2026-10-27
+
+### Fixed: MYNN2.5 blows up at the first step when the shear vanishes (Source/PBL)
+- Symptom: every grey-zone MYNN2.5 / MYNN-EDMF run at 100-400 m (uniform geostrophic sounding, 10x10 or 20x20 boxes) aborted with
+  "Bad rho in check_for_negative_theta" after step 1; K_m reached 5e5 m2/s at t = 0 in a few columns. The 1 km runs survived by luck.
+- Cause (debug build with -fp-speculation=safe and per-column prints): with GM = 0 the level-2 equilibrium TKE was written as
+  B1 L^2 SM2 (1-Rf) GM, which is 0 x inf there and drops the buoyancy term, so the Helfand-Labraga limiter never acted and a
+  1e-7 K/m unstable gradient drove the level-2.5 denominator through zero.
+- Fix: qe2 = B1 L^2 (SM2 GM + SH2 GH) as in NN09 Eqn. 40 / WRF q2sq, and SMmax = 4 (WRF sm25max). 100-step test on the formerly
+  crashing deck: no abort, no negative rho. Production runs (cases/gzpbl_mynn25_dx*, gzpbl_mynnedmf_dx*) resubmitted.
+- Note: the FPE-trap variants of 22-23 Oct trapped a *vectorised* sqrt on a masked-off lane (line 220), a false positive; with
+  -fp-speculation=safe no trap fires and the real mechanism above is visible.
+
+### Found: WRF 4.6.1 YSU segfault on MPI patches wider than ~20 cells (not ERF; recorded here because the scan uses both codes)
+- phys/module_bl_ysu.F copies the BEP urban arrays whenever present(); the driver passes 1x1x1 dummies when sf_urban_physics = 0.
+  Guarded with flag_bep in the lab WRF working tree (27 Oct); verification run passed initialisation.
+
 ## 2026-10-23
 - Aspect-ratio test done (`analysis/ar_test_analysis.py`, `record/results/ar_test.json`): dx = 100 m with dz = 20 / 50 / 100 m gives a
   mixed-layer resolved σ_w of 1.145 / 1.127 / 1.085 m/s (−5 % from dx/dz = 5 to cubic cells), SGS share 5.6 → 9.6 %, z_i 1040 → 1000 m.

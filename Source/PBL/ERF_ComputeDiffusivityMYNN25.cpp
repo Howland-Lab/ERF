@@ -284,7 +284,13 @@ ComputeDiffusivityMYNN25 (const MultiFab& xvel,
             // Equilibrium (Level-2) q calculation follows NN09, Appendix A
             Real Rf  = level2.calc_Rf(GM, GH);
             Real SM2 = level2.calc_SM(Rf);
-            Real qe2 = mynn.B1 * Lm*Lm * SM2 * (one-Rf) * shearProd;
+            Real SH2 = level2.calc_SH(Rf);
+            // Level-2 equilibrium q^2 = B1 L^2 (SM2 GM + SH2 GH), NN09 Eqn. 40 / WRF q2sq. The earlier form
+            // B1 L^2 SM2 (1-Rf) GM is algebraically the same except at GM = 0, where it loses the buoyancy
+            // production entirely (0 x inf): qe = 0, the HL88 limiter below never acts, and for a minute unstable
+            // gradient (|dthetav/dz| > ~1e-6 K/m with q^2 ~ 0.5 m2/s2) the level-2.5 denominator D passes through
+            // zero and K_m blows up (~1e5 m2/s at t = 0 in a uniform-wind sounding). hsna, 27 Oct 2026.
+            Real qe2 = mynn.B1 * Lm*Lm * (SM2 * shearProd + SH2 * buoyProd);
             Real qe  = (qe2 < zero) ? zero : amrex::max(std::sqrt(qe2),eps);
 
             // Level 2 limiting introduced by Helfand and Labraga 1988 (NN09, Eqn. 42)
