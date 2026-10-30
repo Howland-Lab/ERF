@@ -219,8 +219,11 @@ ERF::ERF_shared ()
         // realizations), still offset by rank so the ranks draw independent streams.
         Print() << "Using user random seed " << random_seed << std::endl;
         auto s = static_cast<unsigned long>(random_seed);
-        InitRandom(s + static_cast<unsigned long>(ParallelDescriptor::MyProc()) + 1UL,
-                   ParallelDescriptor::NProcs(), s * 1234567UL + 12345UL);
+        // 29 Oct 2026 (HowlandLab): the GPU seed must be rank-offset too, otherwise every rank's device RNG
+        // draws the same stream and the initial perturbation repeats once per rank (found on PVC: 8 ranks,
+        // 12.7k distinct values of 102k in the t = 0 theta plane; members then share structure).
+        auto sr = s + static_cast<unsigned long>(ParallelDescriptor::MyProc()) + 1UL;
+        InitRandom(sr, ParallelDescriptor::NProcs(), sr * 1234567UL + 12345UL);
     }
 
     if (ParallelDescriptor::IOProcessor()) {

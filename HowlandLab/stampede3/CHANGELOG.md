@@ -121,3 +121,14 @@ Newest first. Record every change to the build/run environment here, with the sy
   `e50b1611b`; login-node -O1 fallback for files that exceed the 8 GB vmem limit.
 - Input decks mirroring the WRF-LES namelists (GABLS1 6.25/3.125 m, Shin & Dudhia convective 25 m); WRF/ERF default
   traps documented (`Pr_t`, `Ri_crit`, `Ce_wall`).
+
+## 29 Oct 2026 — user random seed did not reach the GPU random stream per rank
+`Source/ERF_Constructors.cpp`, user-seed branch (`erf.random_seed >= 0`): the CPU seed was offset by rank but the GPU seed
+(`s * 1234567 + 12345`) was the same on every rank, so on PVC (SYCL) all ranks drew identical noise and the initial
+perturbation repeated once per rank. Evidence: t = 0 theta perturbation of `cases_pvc/ens_cbl25_s1..s4` (8 ranks) has only
+12 % distinct values (1/8); default-seed runs 95 %, SPR (host RNG) seed runs 99 %. The members then shared structure and
+their plane sigma_w oscillated by +-5 % with a ~20-min period (per-frame cv 4-6 % vs 2 % in base runs and in WRF), which
+inflated the "ensemble spread" (3.7 %). Fix: `sr = s + MyProc + 1; InitRandom(sr, NProcs, sr * 1234567 + 12345)`.
+CPU runs are unaffected. Checks: `ERF_runs/analysis/erf_ens_independence_cbl25.py`, `wrf_ens_independence.py`.
+PVC rebuild + rerun of the four members follow; until then the ERF 25 m ensemble spread is not quoted.
+
